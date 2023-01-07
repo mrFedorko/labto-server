@@ -1,10 +1,6 @@
 import { Schema, model, Types } from 'mongoose';
 
-
-
-
-const userSchema = new Schema({
-    
+const userSchema = new Schema({  
     email:{type: String, required: true, unique: true},
     verified:{type:Boolean, default: false },
     password:{type: String, required: true},
@@ -12,8 +8,13 @@ const userSchema = new Schema({
     name: String,
     control: String,
     department: String,
+    position: String,
     role: String, // 'user', 'prep', 'head', 'admin', 'developer'
- 
+    favorite: [Types.ObjectId],
+    draft: [{
+        target: String,
+        quan: Number
+    }]
 });
 
 const User = model('User', userSchema);

@@ -1,25 +1,45 @@
 import { Schema, model, Types} from 'mongoose';
 
-const caseSchema = new Schema({
-    type: String,
+const reagentSchema = new Schema({
+    type: String, // 'rs', 'subst', 'reag'
+    standartType: String,
+    itemId: String,
     name: String,
-    descr: String,
-    from: String,
-    adress: String,
-    term: String,
-    img: {
-        min: String,
-        max: String,
-    },
+    cat: String,
+    lot: String,
+    manuacturer: String,
+    fromDate: Date,
+    toDate: Date,
+    units: String,
+    restUnits: Number,
+    container: Number,
+    passport: [String],
+    SDS: String,
+    TDS: String,
+    inUse: [{
+        userId: String,
+        date: Date,
+        destination: {type: Types.ObjectId},
+        quan: Number,
+        test: String,
+        comment: String,
+    }],
+    warn: [String],
     price: Number,
-    allowed: Boolean,
-    tags: [String],
-    
+    carantin: Boolean,
+    creator: Types.ObjectId,
+    carantinDate: Date,
 
+
+    customField1: {type: String, default: ''},
+    customField2: {type: String, default: ''},
+    customField3: {type: String, default: ''},
+    customField4: {type: String, default: ''},
+    customField5: {type: String, default: ''},
 });
 
-const Case = model('Case', caseSchema);
+const Reagent = model('Reagent', reagentSchema);
 
 
 
-export default Case;
+export default Reagent;
