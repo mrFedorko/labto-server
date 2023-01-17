@@ -6,7 +6,7 @@ const userSchema = new Schema({
     password:{type: String, required: true},
     refreshToken: {type: String, default: ''},
     name: String,
-    control: String,
+    direction: String,
     department: String,
     position: String,
     role: String, // 'user', 'prep', 'head', 'admin', 'developer'

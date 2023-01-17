@@ -9,13 +9,13 @@ export const handleLogin = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({message: "email and/or password required", clientMessage: "Введите данные для входа (e-mail и пароль)"});
         }
-        const foundUser = await User.findOne({email});
 
+        const foundUser = await User.findOne({email});
         if(!foundUser) {
             return res.status(401).json({message: "no user with such email", clientMessage: "Некорректные данные для входа (e-mail или пароль)"});
         }
-        const isPassword = await bcrypt.compare(password, foundUser.password);
-
+        // const isPassword = await bcrypt.compare(password, foundUser.password);
+        const isPassword = (password === foundUser.password)
         if(!foundUser.verified){
             return res.status(401).json({message: "not verified", clientMessage: "Учетная запись не активирована"});
         }
@@ -41,11 +41,14 @@ export const handleLogin = async (req, res) => {
 /////////// saving accessToken & sending response
             res.cookie('jwt', refreshToken, {httpOnly: 'true', maxAge: 16*60*60*1000, secure: true,  sameSite:'None',});
 
-            res.json({accessToken, refreshToken, userId: foundUser.id, message: 'Successfully', clientMessage: 'Приветствуем!'})
+            const {role, name, direction, department, position, favorite} = foundUser
+
+            res.json({accessToken, refreshToken, userId: foundUser.id, role, favorite, name, direction, department, position, message: 'Successfully', clientMessage: 'Приветствуем!'})
         } else {
             return res.status(400).json({message: 'wrong data during login', clientMessage: 'Не верные данные при авторизации'});
         }
     } catch (error) {
         res.status(500).json({message: 'server side error during login', clientMessage: 'Ошибка сервера, обратитесь в поддержку'});
     }
-}
+};
+

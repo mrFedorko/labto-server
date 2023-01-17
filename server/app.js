@@ -9,9 +9,7 @@ import { Router } from 'express';
 import cors from 'cors';
 
 import connectDb from './sshTunel.js';
-import { registerRouter } from './routes/register.route.js';
 import { authRouter } from './routes/auth.route.js';
-import { settingsRouter } from './routes/settings.route.js';
 import { verifyJWT } from './middleware/verifyJWT.js';
 import cookieParser from 'cookie-parser';
 import { refreshTokenRouter } from './routes/refresh.route.js';
@@ -21,18 +19,16 @@ import { credentials } from './middleware/credentials.js';
 import { newOrderRouter } from './routes/order.route.js';
 import https from 'https';
 import http from 'http'
-import { notesRouter } from './routes/note.route.js';
 import { WebSocketServer } from 'ws';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { handleChat } from './ws.js';
-import { handleGetAllReviews } from './controllers/reviewController.js';
 import { chatMessageRouter } from './routes/chat.route.js';
-import { casesRouter } from './routes/cases.route.js';
-import { verifyRouter } from './routes/verify.route.js';
 import { uploadRouter } from './routes/upload.route.js';
-import { reviewRouter } from './routes/review.route.js';
+import { reagentRouter } from './routes/reagent.route.js';
+import { projectRouter } from './routes/project.route.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -47,7 +43,6 @@ const PORT = config.get('port') || 8000;
 
 app.use(credentials);
 app.use(cors(corsOptions));
-
 app.use(express.urlencoded({extended: false}));
 
 app.use(express.json({extended: true}));
@@ -58,26 +53,18 @@ app.use(cookieParser());
 
 
 ///////////////////ROUTES
-app.use('/api/register', registerRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/refresh', refreshTokenRouter);
 app.use('/api/logout', logoutRouter);
-app.use('/api/cases', casesRouter);
-app.use('/api/verify', verifyRouter);
-app.use('/api/review', Router().get(
-    '/getall/',
-    handleGetAllReviews
-))
 
 ///------protected routes
 app.use(verifyJWT);
 
-app.use('/api/settings/', settingsRouter);
+app.use('/api/reagent/', reagentRouter);
+app.use('/api/project/', projectRouter);
 app.use('/api/order/', newOrderRouter);
-app.use('/api/notes/', notesRouter);
 app.use('/api/chat', chatMessageRouter);
-app.use('/api/review', reviewRouter);
-app.use('/api/', uploadRouter)
+app.use('/api/', uploadRouter);
 
 // create server for ws integretion
 const sslCrt = {key: privateKey, cert: certificate}
