@@ -1,1 +1,2 @@
-# mint-server-copy
+# Labto-server
+
