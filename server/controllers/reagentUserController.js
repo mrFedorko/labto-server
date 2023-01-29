@@ -4,8 +4,9 @@ import User from "../models/User.js";
 
 
 export const handleFavoriteReagent = async (req, res) => {
-    const {userId, target} = req.params
+    const {userId} = req
     try {
+        const {target} = req.params
         const user = await User.findById(userId);
         if (user.favorite.includes(target)){
             return res.sendStatus(403)
@@ -16,11 +17,13 @@ export const handleFavoriteReagent = async (req, res) => {
         res.json({message: 'upd', clientMessage: 'Добавленно в избранное'});
     } catch (error) {
         console.error(error)
+        res.sendStatus(400)
     }
 }
 
 export const handleUnfavoriteReagent = async (req, res) => {
-    const {userId, target} = req.params
+    const {target} = req.params
+    const {userId} = req
     try {
         const user = await User.findById(userId);
         if (!user.favorite.includes(target)){
@@ -32,6 +35,7 @@ export const handleUnfavoriteReagent = async (req, res) => {
         res.json({message: 'upd', clientMessage: 'Исключено из избранного'});
     } catch (error) {
         console.error(error)
+        res.sendStatus(400)
     }
 }
 
