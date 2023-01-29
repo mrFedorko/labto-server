@@ -3,10 +3,11 @@ import multer from 'multer';
 
 const fileStorageEng = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './layouts');
+        cb(null, './docs');
     },
     filename: (req, file , cb) => {
-        cb(null, req.params.id + '_' + req.params.date  + '--' + file.originalname);
+        file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8')
+        cb(null, req.params.itemId +  '--' + file.originalname);
     },
 });
 

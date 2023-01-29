@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import config from 'config'
+import { handleHistory } from '../services/historyAdd.js';
 
 export const handleLogin = async (req, res) => {
     try {
@@ -24,12 +25,14 @@ export const handleLogin = async (req, res) => {
 /////////// JWTS CREATION
             const accessToken = jwt.sign({
                 userId: foundUser.id,
+                userRole: foundUser.role,
             }, 
             config.get('ACCESS_TOKEN_SECRET'),
-            {expiresIn: '40m'});
+            {expiresIn: '20m'});
 
             const refreshToken = jwt.sign({
                 userId: foundUser.id,
+                userRole: foundUser.role
             }, 
             config.get('REFRESH_TOKEN_SECRET'),
             {expiresIn: '15h'});
@@ -41,9 +44,10 @@ export const handleLogin = async (req, res) => {
 /////////// saving accessToken & sending response
             res.cookie('jwt', refreshToken, {httpOnly: 'true', maxAge: 16*60*60*1000, secure: true,  sameSite:'None',});
 
-            const {role, name, direction, department, position, favorite} = foundUser
+            const {role, name, direction, department, position, favorite, id} = foundUser
 
             res.json({accessToken, refreshToken, userId: foundUser.id, role, favorite, name, direction, department, position, message: 'Successfully', clientMessage: 'Приветствуем!'})
+            handleHistory(id, {target:id}, 'enterSystem')
         } else {
             return res.status(400).json({message: 'wrong data during login', clientMessage: 'Не верные данные при авторизации'});
         }

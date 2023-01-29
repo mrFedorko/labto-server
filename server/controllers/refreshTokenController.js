@@ -6,7 +6,9 @@ export const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
 
     if(!cookies?.jwt) {
-        return res.sendStatus(401)
+        console.log('no cookies');
+        return res.sendStatus(401);
+       
     };
     const refreshToken = cookies.jwt;
     const foundUser = await User.findOne({refreshToken: refreshToken.toString()});
@@ -20,11 +22,20 @@ export const handleRefreshToken = async (req, res) => {
                 return res.sendStatus(403);
             };
             const accessToken = jwt.sign(
-                {userId: decoded.userId},
+                {userId: decoded.userId, userRole: decoded.userRole},
                 config.get('ACCESS_TOKEN_SECRET'),
-                {expiresIn: '40m'}
+                {expiresIn: '20m'}
             );
-            res.json({accessToken})
+            res.json({
+                accessToken, 
+                userId: foundUser.id, 
+                role: foundUser.role, 
+                favorite: foundUser.favorite, 
+                name : foundUser.name,
+                direction : foundUser.direction,
+                department : foundUser.department,
+                position : foundUser.position,
+            })
         } 
     )
 }

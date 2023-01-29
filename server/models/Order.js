@@ -2,14 +2,22 @@ import { Schema, model, Types } from 'mongoose';
 
 const orderSchema = new Schema({
     name: {type: String, require: true},
+    manufacturer: {type: String, default: ''},
+    cat: {type: String, default: ''},
     type: {type: String, default: ''},
-    quan: {type: String, default: ''},
-    comment: {type: String, default: ''},
-    status: {type: String, default: ''},
-    fromDate: {type: String, default: ''},
-    message: {type: Array},
-    target: {type: Types.ObjectId, ref: 'Reagent'},
+    text: {type: String, default: ''},
+    status: {type: String, default: 'created'},
+    fromDate: {type: Date, default: Date.now()},
+    messages: [{
+        from: String,
+        date: {type: Date, default: Date.now()},
+        text: String
+    }],
     owner: {type: Types.ObjectId, ref: 'User'},
+    ownerName: {type: String, default: ''},
+    addressee: Types.ObjectId,
+    archive: {type: Boolean, default: false},
+    initialDestination: {type:String, default: ''},
 });
 
 const Order = model('Order', orderSchema);

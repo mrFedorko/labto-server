@@ -6,6 +6,6 @@ import { uploadMW } from "../middleware/upload.js";
 
 const uploadRouter = Router();
 
-uploadRouter.patch('/upload/:id/:date', uploadMW.array('files'), handleUpload)
+uploadRouter.patch('/upload/:userId/:itemId', uploadMW.single('files'), handleUpload)
 
 export {uploadRouter};

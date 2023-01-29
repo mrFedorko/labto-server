@@ -1,15 +1,32 @@
 import { Router } from 'express';
-import { handleGetOrders, handleNewOrder } from '../controllers/orderController.js';
+import { handleDeleteOrder, handleGetMyOrders, handleGetOrders, handleMessageOrder, handleNewOrder, handleStatusOrder } from '../controllers/orderController.js';
 
-const newOrderRouter = Router();
+const orderRouter = Router();
 
-newOrderRouter.get(
-    '/getall/:id',
-    handleGetOrders
-);
-newOrderRouter.post(
-    '/create',
+orderRouter.post( ///done
+    '/create/',
     handleNewOrder
 );
+orderRouter.patch( ///done
+    '/status/:target/:status/',
+    handleStatusOrder
+);
+orderRouter.delete( ///done
+    '/delete/:target/',
+    handleDeleteOrder
+);
+orderRouter.put( ///done
+    '/message/:target/',
+    handleMessageOrder
+);
+orderRouter.get(
+    '/getMy/',
+    handleGetMyOrders
+);
+orderRouter.get(
+    '/geaAll/:status/',
+    handleGetOrders
+);
 
-export {newOrderRouter}
+
+export {orderRouter}

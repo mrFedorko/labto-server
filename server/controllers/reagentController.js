@@ -1,36 +1,16 @@
 import Reagent from "../models/Reagent.js";
 import User from "../models/User.js";
-
+import { handleHistory } from "../services/historyAdd.js";
+import { unlink } from 'node:fs';
+import path from "path";
+import { roleValidation } from "../services/roleValidation.js";
 
 export const handleAddReagent = async (req, res) => {
-    const creator = req.params.userId;
-    const user = await User.findById(creator);
-    const permited = ['prep', 'head', 'admin', 'developer'];
-
-    if(!permited.includes(user.role)){
-        return res.status(403).json({message: "forbiden", clientMessage: "Вы не обладаете необходимыми правами для совершения данного дествия"});
-    }
+    roleValidation(req, res, 'addReag');
+    const creator = req.userId;
 
     try {
-        const {
-            type, 
-            standartType, 
-            itemId, 
-            name,
-            CAS, 
-            cat, 
-            lot, 
-            manufacturer, 
-            fromDate,
-            toDate,
-            units,
-            container,
-            passport,
-            SDS,
-            TDS,
-            warn,
-            price,
-            location
+        const {type, standartType, itemId, name,CAS, cat, lot, manufacturer, fromDate,toDate,units,container,passport,SDS,TDS,warn,price,location, initialDestination
         } = req.body;     
         
         const existed = await Reagent.findOne({itemId})
@@ -38,32 +18,12 @@ export const handleAddReagent = async (req, res) => {
           return res.status(403).json({message: 'forbiden', clientMessage: 'Поле ID должно быть уникальным, внесите изменения и попробуйте снова'})
         }
 
-        const newReagent = new Reagent({
-            type, 
-            standartType, 
-            itemId, 
-            name, 
-            CAS,
-            cat, 
-            lot, 
-            manufacturer, 
-            fromDate,
-            toDate,
-            units,
-            container,
-            passport,
-            SDS,
-            TDS,
-            warn,
-            price,
-            creator,
-            inUse: [],
-            location,
-            restUnits: container,
+        const newReagent = new Reagent({type, standartType, itemId, name, CAS,cat, lot, manufacturer, fromDate,toDate,units,container,passport,SDS,TDS,warn,price,creator,inUse: [],location,restUnits: container,initialDestination
 
         })
     
         await newReagent.save();
+        await handleHistory(creator, {itemId, name}, 'addReag')
         res.status(201)
         .json({
             message: 'created', 
@@ -79,15 +39,51 @@ export const handleAddReagent = async (req, res) => {
     }
 }
 
+export const handleChangeReagent = async (req, res) => {
+    const {target} = req.params;
+    const userId = req.userId;
+    roleValidation(req, res, 'changeReag');
+
+    try {
+        const { CAS,passport,SDS,TDS,warn,price,location } = req.body;     
+        
+        const reagent = await Reagent.findById(target)
+        const {itemId, name} = reagent;
+        if(passport) {reagent.passport = passport};
+        reagent.SDS = SDS;
+        reagent.TDS = TDS;
+        reagent.warn = warn;
+        reagent.price = price;
+        reagent.location = location;
+        reagent.CAS = CAS;
+        reagent.changed = true;
+    
+        await reagent.save();
+        await handleHistory(userId, {itemId, name, target}, 'changeReag')
+        res.status(201)
+        .json({
+            message: 'updated', 
+            clientMessage: 'Документ изменен',
+        });
+
+    } catch (error) {
+    console.log(error);
+        res.status(500)
+        .json({
+            message: 'server side error', 
+            clientMessage: 'Ошибка сервера при изменении документа',
+        });
+    }
+}
+
 export const handleGetReagents = async (req, res) => {
     try {
-        const type = req.params.type
-        const isolate = req.params.isolate
+        const {type, isolate} = req.params
 
  
         if (isolate === 'false'){
             
-            const reagents = await Reagent.find({type, isolate: false}).select({inUse: 0});
+            const reagents = await Reagent.find({type, isolate: false}).sort('-itemId').select({inUse: 0});
             res.json({reagents,  message: 'data fetch'})
         }
         if (isolate === 'true'){
@@ -102,14 +98,13 @@ export const handleGetReagents = async (req, res) => {
 
 export const handleTakeReagent = async (req, res) => {
     try {
-        const {target, userId} = req.params;
+        const userId = req.userId
+        const {target} = req.params;
         const {date, destination, quan, test, comment} = req.body;
+        
+        
         const reagent = await Reagent.findById(target);
         const user = await User.findById(userId);
-        
-        if(isNaN(+quan)){
-            return res.sendStatus(406)
-        }
 
         reagent.inUse.push({userId, date, destination, quan, test, comment, name: user.name});
         
@@ -119,6 +114,7 @@ export const handleTakeReagent = async (req, res) => {
             return res.status(406).json({message: "not allowed", clientMessage: "Вы не можете списать больше, чем остаток. Возможно кто-то списал эту позиию до вас. Обновите список, чтобы увидеть актульные данные"})
         }
         await reagent.save();
+        await handleHistory(userId, {itemId: reagent.itemId, name: reagent.name, target}, 'takeReag')
         res.json({meassage: 'upd', clientMessage: 'Расход оформлен'});
 
     } catch (error) {
@@ -128,18 +124,17 @@ export const handleTakeReagent = async (req, res) => {
 }
 
 export const handleIsolateReagent = async (req, res) => {
-    try {
-        const {target, userId} = req.params;
-        const user = await User.findById(userId);
-        const permited = ['prep', 'head', 'admin', 'developer'];
+    const userId = req.userId;
+    roleValidation(req, res, 'isolateReag');
 
-        if(!permited.includes(user.role)){
-            return res.status(403).json({message: "forbiden", clientMessage: "Вы не обладаете необходимыми правами для совершения данного дествия"});
-        }
+    try {
+        
+        const {target} = req.params;
 
         const reagent = await Reagent.findById(target);
         reagent.isolate = true;
-        reagent.save();
+        await reagent.save();
+        await handleHistory(userId, {itemId: reagent.itemId, name: reagent.name, target}, 'isolateReag');
         res.json({message: 'upd', clientMessage: 'Перенесено в карантин'});
 
         
@@ -150,15 +145,11 @@ export const handleIsolateReagent = async (req, res) => {
 }
 
 export const handleDeleteReagent = async (req, res) => {
-
+    const userId = req.userId
+    roleValidation(req, res, 'deleteReag');
     try {
-        const {target, userId} = req.params;
-        const user = await User.findById(userId);
-        const permited = ['prep', 'head', 'admin', 'developer'];
-
-        if(!permited.includes(user.role)){
-            return res.status(403).json({message: "forbiden", clientMessage: "Вы не обладаете необходимыми правами для совершения данного дествия"});
-        }
+        
+        const {target} = req.params;
 
         const users = await User.find({})
         users.forEach(async (user) =>{
@@ -167,21 +158,33 @@ export const handleDeleteReagent = async (req, res) => {
             await user.save();
         } )
 
-        await Reagent.findByIdAndDelete(target);
-       
+        const reagent = await Reagent.findById(target);
+        
+
+        if (reagent.passport){
+            try {
+                const file = path.resolve('./docs/'+reagent.passport)
+                unlink(file, (err) => {
+                    if (err) throw err;
+                    console.log(file, ' was deleted');
+                });
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        await handleHistory(userId, {itemId: reagent.itemId, name: reagent.name, target}, 'deleteReag');
+        reagent.delete();
         res.json({message: 'deleted', clientMessage: 'Документ удален'});
 
-        
     } catch (error) {
         console.error(error)
-        res.status(500).json({message: 'server side error', clientMessage: 'ошибка сервера при получении данных'})
+        res.status(500).json({message: 'server side error', clientMessage: 'ошибка сервера при удалении документа'})
     }
 }
 
 export const handleGetOneReagent = async (req, res) => {
     try {
         const {target} = req.params;
-
         const reagent = await Reagent.findById(target);
        
         res.json({message: 'ok', reagent});
@@ -239,5 +242,21 @@ export const handleAddManyReagents = (req, res) => {
         }
     
 }
+
+export const deleteHandler = async (req, res) => {
+    try {
+        const reags = await Reagent.find()
+    reags.forEach(async (item) => {
+        if (item.passport === ['']){
+            item.passport = '';
+            await item.save()
+        }
+    })
+    res.sendStatus(200)
+    } catch (error) {
+    console.log(error)        
+    }
+
+} 
 
 

@@ -15,7 +15,7 @@ const reagentSchema = new Schema({
     restUnits: Number,
     container: Number,
     location: {type: String, default: ''},
-    passport: {type: Array, default: []},
+    passport: {type: String, default: ''},
     SDS: String,
     TDS: String,
     inUse: [{
@@ -32,13 +32,8 @@ const reagentSchema = new Schema({
     isolate: {type: Boolean, default: false},
     creator: Types.ObjectId,
     isolateDate: Date,
-
-
-    customField1: {type: String, default: ''},
-    customField2: {type: String, default: ''},
-    customField3: {type: String, default: ''},
-    customField4: {type: String, default: ''},
-    customField5: {type: String, default: ''},
+    changed: {type: Boolean, default: false},
+    initialDestination: {type: String,  default: ''}
 });
 
 const Reagent = model('Reagent', reagentSchema);

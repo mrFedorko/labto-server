@@ -11,10 +11,7 @@ const userSchema = new Schema({
     position: String,
     role: String, // 'user', 'prep', 'head', 'admin', 'developer'
     favorite: [Types.ObjectId],
-    draft: [{
-        target: String,
-        quan: Number
-    }]
+    phone:{type: String, default: ''}
 });
 
 const User = model('User', userSchema);

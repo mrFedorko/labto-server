@@ -16,7 +16,7 @@ import { refreshTokenRouter } from './routes/refresh.route.js';
 import { logoutRouter } from './routes/logout.route.js';
 import { corsOptions } from '../config/corsOptions.js';
 import { credentials } from './middleware/credentials.js';
-import { newOrderRouter } from './routes/order.route.js';
+import { orderRouter } from './routes/order.route.js';
 import https from 'https';
 import http from 'http'
 import { WebSocketServer } from 'ws';
@@ -28,6 +28,10 @@ import { chatMessageRouter } from './routes/chat.route.js';
 import { uploadRouter } from './routes/upload.route.js';
 import { reagentRouter } from './routes/reagent.route.js';
 import { projectRouter } from './routes/project.route.js';
+import { draftRouter } from './routes/draft.route.js';
+import { historyRouter } from './routes/history.route.js';
+import { deleteHandler } from './controllers/reagentController.js';
+import { userRouter } from './routes/user.route.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -56,14 +60,17 @@ app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/refresh', refreshTokenRouter);
 app.use('/api/logout', logoutRouter);
-
+/////ROUTES TO DELETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+app.use('/api/arrayhandler', deleteHandler)
 ///------protected routes
 app.use(verifyJWT);
-
+app.use('/api/history', historyRouter)
 app.use('/api/reagent/', reagentRouter);
+app.use('/api/draft/', draftRouter)
 app.use('/api/project/', projectRouter);
-app.use('/api/order/', newOrderRouter);
-app.use('/api/chat', chatMessageRouter);
+app.use('/api/order/',orderRouter);
+app.use('/api/users/', userRouter)
+app.use('/api/chat/', chatMessageRouter);
 app.use('/api/', uploadRouter);
 
 // create server for ws integretion
