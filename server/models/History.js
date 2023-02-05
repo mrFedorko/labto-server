@@ -9,7 +9,7 @@ const historySchema = new Schema({
             target: {type: String, default: ''}
         },
         action: String,
-        date: {type: Date, default: Date.now(), expires: 3600*24*365},
+        date: {type: Date, default: Date.now()},
     }], default: []},
     owner: {type: Types.ObjectId, ref: 'User'},
 });

@@ -2,7 +2,7 @@ import { Schema, model, Types } from 'mongoose';
 
 const draftSchema = new Schema({  
     owner: Types.ObjectId,
-    expiresDate: {type:Date, default: Date.now(), expires: 3600*24*10},
+    expiresDate: {type:Date, default: Date.now(), expires: 120},
     date: {type:Date, default: Date.now()},
     action: {type: String, default: 'flow'},
     target : {

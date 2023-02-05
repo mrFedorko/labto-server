@@ -32,6 +32,7 @@ import { draftRouter } from './routes/draft.route.js';
 import { historyRouter } from './routes/history.route.js';
 import { deleteHandler } from './controllers/reagentController.js';
 import { userRouter } from './routes/user.route.js';
+import { optionRouter } from './routes/optins.route.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -64,7 +65,8 @@ app.use('/api/logout', logoutRouter);
 app.use('/api/arrayhandler', deleteHandler)
 ///------protected routes
 app.use(verifyJWT);
-app.use('/api/history', historyRouter)
+app.use('/api/options/', optionRouter)
+app.use('/api/history/', historyRouter)
 app.use('/api/reagent/', reagentRouter);
 app.use('/api/draft/', draftRouter)
 app.use('/api/project/', projectRouter);

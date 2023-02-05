@@ -15,7 +15,12 @@ type HistoryAction = 'addReag' |
     'deleteUser'|
     'enterSystem' |
     'getUserHistory' | 
-    'changeUser'
+    'changeUser' |
+    'addOption' |
+    'deleteOption' |
+    "createProject" |
+    "changeProjectStatus" |
+    "deleteProject"
     ;
 
 type ReagType = 'reag' | 'rs' | 'subst';

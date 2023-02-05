@@ -1,6 +1,15 @@
 import { Schema, model, Types } from 'mongoose';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('1234567890', 7)
 
 const orderSchema = new Schema({
+    uniqueId: {
+        type: String,
+        required: true,
+        default: () => nanoid(7),
+        index: { unique: true },
+    },
     name: {type: String, require: true},
     manufacturer: {type: String, default: ''},
     cat: {type: String, default: ''},

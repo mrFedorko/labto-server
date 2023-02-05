@@ -4,7 +4,7 @@ import User from "../models/User.js";
 
 
 export const handleFavoriteReagent = async (req, res) => {
-    const {userId} = req
+    const {userId} = req;
     try {
         const {target} = req.params
         const user = await User.findById(userId);

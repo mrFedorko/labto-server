@@ -4,6 +4,7 @@ import { handleHistory } from "../services/historyAdd.js";
 import { unlink } from 'node:fs';
 import path from "path";
 import { roleValidation } from "../services/roleValidation.js";
+import Option from "../models/Option.js";
 
 export const handleAddReagent = async (req, res) => {
     roleValidation(req, res, 'addReag');
@@ -245,18 +246,15 @@ export const handleAddManyReagents = (req, res) => {
 
 export const deleteHandler = async (req, res) => {
     try {
-        const reags = await Reagent.find()
-    reags.forEach(async (item) => {
-        if (item.passport === ['']){
-            item.passport = '';
-            await item.save()
-        }
-    })
-    res.sendStatus(200)
-    } catch (error) {
+        const {name, options} = req.body
+        const option = new Option({name, options})
+        await option.save();
+        res.sendStatus(200)
+    }
+    catch (error) {
     console.log(error)        
     }
-
+    res.sendStatus(500)
 } 
 
 

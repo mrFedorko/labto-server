@@ -4,12 +4,12 @@ import { handleAddProject, handleGetProjects } from '../controllers/projectContr
 const projectRouter = Router();
 
 projectRouter.post(
-    '/addProject/:userId/',
+    '/addProject/',
     handleAddProject
 );
 
 projectRouter.get(
-    '/getProjects/',
+    '/getProjects/:closed',
     handleGetProjects
 )
 
