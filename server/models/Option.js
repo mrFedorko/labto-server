@@ -12,6 +12,5 @@ const optionSchema = new Schema({
 
 const Option = model('Option', optionSchema);
 
-
-
 export default Option;
+
