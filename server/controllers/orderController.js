@@ -6,12 +6,10 @@ import { handleHistory } from "../services/historyAdd.js";
 export const handleNewOrder = async (req, res) => {
     const {userId} = req
     try {
-        const owner = User.findById(userId)
+        const owner = await User.findById(userId)
         const ownerName = owner.name
 
-        const {name, type, text, addresseeName, manufacturer, cat, initialDestination} = req.body;
-        const targetUser = await User.findOne({name: addresseeName});
-        const addressee = targetUser._id
+        const {name, type, text, addressee, manufacturer, cat, initialDestination} = req.body;
 
         const order = new Order({name, type, text, addressee, owner: userId, ownerName, manufacturer, cat, initialDestination});
         await order.save();
@@ -33,7 +31,7 @@ export const handleStatusOrder = async (req, res) => {
     try {
 
         const {target, status} = req.params;
-        const order = await Order.findById(target);
+        const order = await Order.findOne({uniqueId: target});
         const {name, uniqueId} = order;
         order.status = status;
         await order.save()
@@ -56,13 +54,37 @@ export const handleDeleteOrder = async (req, res) => {
     try {
 
         const {target} = req.params;
-        const order = await Order.findById(target);
+        const order = await Order.findOne({uniqueId: target});
+        if(!order) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти заказ. Возможно, он был удален ранее'})
         const name = order.name;
         const itemId = order.uniqueId;
         await order.delete()
 
         await handleHistory(userId, {name, target, itemId}, 'deleteOrder')
-        res.status(200).json({message: 'success', clientMessage: 'Статус успешно изменен'})
+        res.status(200).json({message: 'success', clientMessage: 'Заказ успешно удален'})
+
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+        .json({
+            message: 'server side error', 
+            clientMessage: 'Ошибка сервера при удалении заказа',
+        });
+    }
+}
+export const handleArchiveOrder = async (req, res) => {
+    if(!roleValidation(req, res, 'changeOrderStatus')) return;
+    const {userId} = req
+    try {
+        const {target} = req.params;
+        const order = await Order.findOne({uniqueId: target});
+        if(!order) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти заказ. Возможно, он был удален'})
+        const name = order.name;
+        const itemId = order.uniqueId;
+        order.archive = true;
+        await order.save();
+        await handleHistory(userId, {name, target, itemId}, 'changeOrderStatus')
+        res.status(200).json({message: 'success', clientMessage: 'Перенесено в архив'})
 
     } catch (error) {
         console.log(error);
@@ -121,10 +143,10 @@ export const handleGetOrders = async (req, res) => {
     if(!roleValidation(req, res, 'getAllOrders')) return;
    
     try { 
-        const {status} = req.params
-
+        const {reqStatus} = req.params
+        
         const handleOrderReqParams = () => {
-            switch (status) {
+            switch (reqStatus) {
                 case 'allMy':
                     return {addressee: userId, archive: false}
                 case 'activeMy':
@@ -136,9 +158,9 @@ export const handleGetOrders = async (req, res) => {
                 case 'archiveMy':
                     return {addressee: userId, archive: true}
                 case 'all':
-                    return {archive: false}
+                    return  {archive: false}
                 case 'archive':
-                    return {archive: true}
+                    return  {archive: true}
                 default:
                 return {}
             }
@@ -159,5 +181,38 @@ export const handleGetOrders = async (req, res) => {
         });
     }
 }
+
+export const handleRedirectOrder = async (req, res) => {
+    if(!roleValidation(req, res, 'redirectOrder')) return;
+    const {userId} = req
+    try {
+        const {targetUser, target} = req.params;
+        const order = await Order.findOne({uniqueId: target});
+        if(!order){
+            return res.status(400).json({message: 'error', clientMessage: 'Заказ не найден. Возможно кто-то уже удалил его'})
+        }
+        const user = await User.findById(targetUser);
+        if(!user){
+            return res.status(400).json({message: 'error', clientMessage: 'Пользователь не найден. Действие отменено'})
+        }
+        const targetName = user.name;
+        const orderId = order.uniqueId;
+        const orderName = order.name
+        order.addressee = targetUser;
+        await order.save();
+
+        await handleHistory(userId, {name: orderName, target: targetName, itemId:orderId }, 'redirectOrder')
+        res.json({message: 'success', clientMessage: 'Адресат изменен'})
+
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+        .json({
+            message: 'server side error', 
+            clientMessage: 'Ошибка сервера при изменении адресата',
+        });
+    }
+}
+
 
 

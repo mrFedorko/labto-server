@@ -7,10 +7,15 @@ type HistoryAction =
     'addDraft' | 
     'takeColumn' | 
     'returnColumn' |
+    'addColumn'|     // NONONON
+    'changeColumn'|     // NONONON
+    'isolateColumn'|     // NONONON
+    'deleteColumn'|     // NONONON
     'createOrder' |
     'changeOrderStatus'|
     'deleteOrder' |
     'getAllOrders' |
+    'redirectOrder' |
     'createReport'|
     'addUser'|
     'deleteUser'|
@@ -20,7 +25,7 @@ type HistoryAction =
     'addOption' |
     'deleteOption' |
     "createProject" |
-    "changeProjectStatus" |
+    "changeProject" |
     "deleteProject" |
     "addColumn"
     ;

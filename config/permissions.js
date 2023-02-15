@@ -14,6 +14,9 @@ const permissions = {
     "deleteReag" : [
         "prep", "head", "admin", "developer"
     ],
+    "redirectOrder" : [
+        "prep", "head", "admin", "developer"
+    ],
     "createOrder" : [
         "user", "prep", "head", "admin", "developer"
     ],
@@ -32,6 +35,18 @@ const permissions = {
     ],
     "returnColumn" : [
         "user", "prep", "head", "admin", "developer"
+    ],
+    "addColumn" : [
+        "prep", "head", "admin", "developer"
+    ],
+    "changeColumn" : [
+        "prep", "head", "admin", "developer"
+    ],
+    "isolateColumn" : [
+        "prep", "head", "admin", "developer"
+    ],
+    "deleteColumn" : [
+        "prep", "head", "admin", "developer"
     ],
     "createReport" : [
         "head", "admin", "developer"

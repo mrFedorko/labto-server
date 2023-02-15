@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { handleDeleteOrder, handleGetMyOrders, handleGetOrders, handleMessageOrder, handleNewOrder, handleStatusOrder } from '../controllers/orderController.js';
+import { handleArchiveOrder, handleDeleteOrder, handleGetMyOrders, handleGetOrders, handleMessageOrder, handleNewOrder, handleRedirectOrder, handleStatusOrder } from '../controllers/orderController.js';
 
 const orderRouter = Router();
 
@@ -24,8 +24,16 @@ orderRouter.get(
     handleGetMyOrders
 );
 orderRouter.get(
-    '/getAll/:status/',
+    '/getAll/:reqStatus/',
     handleGetOrders
+);
+orderRouter.patch(
+    '/redirect/:targetUser/:target',
+    handleRedirectOrder
+);
+orderRouter.patch(
+    '/archive/:target',
+    handleArchiveOrder
 );
 
 

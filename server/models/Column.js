@@ -1,6 +1,7 @@
 import { Schema, model, Types } from 'mongoose';
 
 const columnSchema = new Schema({  
+    type: String, 
     name: String,
     itemId: String,
     manufacturer: String,
@@ -11,15 +12,26 @@ const columnSchema = new Schema({
     restSolvent: String,
     descr: {type: String, default: ''},
     status: {type: Boolean, default: false},
+    passport: {type: String, default: ''},
+    pressureLimit: {type: String, default: ''},
+    isolate: {type: Boolean, default: false},
+    isolateDate: Date,
     mainSubstance: {type: String, default: ''},
     mainProject: {
+        code: String,
+        name: String,
+    },
+    initialDestination: {
         code: String,
         name: String,
     },
     current: {
         userId: { type: String, default: ''},
         userName: {type: String, default: ''},
-        destination: {type: String, default: ''},
+        destination: {
+            name: {type: String, default: ''},
+            code: {type: String, default: ''},
+        },
         test: {type: String, default: ''},
         fromdDate: {type: Date},
     },
@@ -37,14 +49,7 @@ const columnSchema = new Schema({
             comment: {type: String, default: ''},
         }
     ],
-    passport: {type: String, default: ''},
-    pressureLimit: {type: stringify, default: ''},
-    isolate: {type: Boolean, default: false},
-    isolateDate: Date,
-    initialDestination: {
-        code: String,
-        name: String,
-    },
+    
 });
 
 const Column = model('Column', columnSchema);

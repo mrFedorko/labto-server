@@ -7,7 +7,7 @@ import { roleValidation } from "../services/roleValidation.js";
 import Option from "../models/Option.js";
 
 export const handleAddReagent = async (req, res) => {
-    if(!roleValidation(req, res, 'addReag')) return;;
+    if(!roleValidation(req, res, 'addReag')) return;
     const creator = req.userId;
 
     try {
@@ -88,7 +88,7 @@ export const handleGetReagents = async (req, res) => {
             res.json({reagents,  message: 'data fetch'})
         }
         if (isolate === 'true'){
-            const reagents = await Reagent.find({type, isolate: true});
+            const reagents = await Reagent.find({type, isolate: true}).select({inUse: 0});;
             res.json({reagents,  message: 'data fetch'})
         }
     } catch (error) {
@@ -188,7 +188,7 @@ export const handleGetOneReagent = async (req, res) => {
     try {
         const {target} = req.params;
         const reagent = await Reagent.findById(target);
-       
+        if(!reagent) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти реактив. Возможно кто-то удалил его'})
         res.json({message: 'ok', reagent});
         
     } catch (error) {
@@ -244,18 +244,5 @@ export const handleAddManyReagents = (req, res) => {
         }
     
 }
-
-export const deleteHandler = async (req, res) => {
-    try {
-        const {name, options} = req.body
-        const option = new Option({name, options})
-        await option.save();
-        res.sendStatus(200)
-    }
-    catch (error) {
-    console.log(error)        
-    }
-    res.sendStatus(500)
-} 
 
 

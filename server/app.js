@@ -30,7 +30,6 @@ import { reagentRouter } from './routes/reagent.route.js';
 import { projectRouter } from './routes/project.route.js';
 import { draftRouter } from './routes/draft.route.js';
 import { historyRouter } from './routes/history.route.js';
-import { deleteHandler } from './controllers/reagentController.js';
 import { userRouter } from './routes/user.route.js';
 import { optionRouter } from './routes/optins.route.js';
 
@@ -62,7 +61,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/refresh', refreshTokenRouter);
 app.use('/api/logout', logoutRouter);
 /////ROUTES TO DELETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-app.use('/api/arrayhandler', deleteHandler)
+
 ///------protected routes
 app.use(verifyJWT);
 app.use('/api/options/', optionRouter)
