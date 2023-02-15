@@ -23,8 +23,8 @@ export const handleUpload = async (req, res) => {
 
         if(!reagent) return res.status(400).json({ message: "couldnt upload", clientMessage: "ошибка при загрузке файла паспорта"});
         const fileName = req.body.fileName
-
-        if (reagent.passport && !handleIsURL(reagent.passport)){
+        console.log(handleIsURL(reagent.passport))
+        if (reagent.passport && handleIsURL(reagent.passport)){
             const file = path.resolve('./docs/'+reagent.passport)
             unlink(file, (err) => {
             if (err) throw err;

@@ -15,7 +15,7 @@ export const handleGetHistory = async (req, res) => {
 }
 
 export const handleGetUserHistory = async (req, res) => {
-    roleValidation(req, res, 'getUserHistory')
+    if(!roleValidation(req, res, 'getUserHistory')) return;
     try {
         const {target} = req.params;
         const history = await History.findOne({owner: target})

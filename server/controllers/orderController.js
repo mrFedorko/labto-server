@@ -11,7 +11,7 @@ export const handleNewOrder = async (req, res) => {
 
         const {name, type, text, addresseeName, manufacturer, cat, initialDestination} = req.body;
         const targetUser = await User.findOne({name: addresseeName});
-        const addressee = targetUser.id
+        const addressee = targetUser._id
 
         const order = new Order({name, type, text, addressee, owner: userId, ownerName, manufacturer, cat, initialDestination});
         await order.save();
@@ -28,7 +28,7 @@ export const handleNewOrder = async (req, res) => {
 }
 
 export const handleStatusOrder = async (req, res) => {
-    roleValidation(req, res, 'changeOrderStatus');
+    if(!roleValidation(req, res, 'changeOrderStatus')) return;
     const {userId} = req
     try {
 
@@ -51,7 +51,7 @@ export const handleStatusOrder = async (req, res) => {
 }
 
 export const handleDeleteOrder = async (req, res) => {
-    roleValidation(req, res, 'deleteOrder');
+    if(!roleValidation(req, res, 'deleteOrder')) return;
     const {userId} = req
     try {
 
@@ -118,25 +118,27 @@ export const handleGetMyOrders = async (req, res) => {
 
 export const handleGetOrders = async (req, res) => {
     const {userId} = req
-    roleValidation(req, res, 'getAllOrders');
+    if(!roleValidation(req, res, 'getAllOrders')) return;
    
     try { 
         const {status} = req.params
 
         const handleOrderReqParams = () => {
             switch (status) {
-                case 'all':
+                case 'allMy':
                     return {addressee: userId, archive: false}
-                case 'active':
+                case 'activeMy':
                     return {addressee: userId, archive: false, status: {$nin : ['canceled', 'confirmed']}}
-                case 'new':
+                case 'newMy':
                     return {addressee: userId, archive: false, status: 'created'}
-                case 'completed':
+                case 'completedMy':
                     return {addressee: userId, archive: false, status: 'completed'}
-                case 'archive':
+                case 'archiveMy':
                     return {addressee: userId, archive: true}
+                case 'all':
+                    return {archive: false}
                 case 'archive':
-                    return {addressee: userId, archive: true}
+                    return {archive: true}
                 default:
                 return {}
             }

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { handleAddProject, handleGetProjects } from '../controllers/projectController.js';
+import { handleAddProject, handleChangeProject, handleCloseProject, handleDeleteProject, handleGetProjects } from '../controllers/projectController.js';
 
 const projectRouter = Router();
 
@@ -12,6 +12,19 @@ projectRouter.get(
     '/getProjects/:closed',
     handleGetProjects
 )
+projectRouter.patch(
+    '/close/:target/',
+    handleCloseProject
+)
+projectRouter.delete(
+    '/deleteOne/:target',
+    handleDeleteProject
+)
+projectRouter.patch(
+    '/changeOne/:target',
+    handleChangeProject
+)
+
 
 
 

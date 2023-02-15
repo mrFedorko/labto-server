@@ -24,7 +24,7 @@ orderRouter.get(
     handleGetMyOrders
 );
 orderRouter.get(
-    '/geaAll/:status/',
+    '/getAll/:status/',
     handleGetOrders
 );
 

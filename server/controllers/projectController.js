@@ -17,7 +17,7 @@ export const handleGetProjects = async (req, res) => {
 
 
 export const handleAddProject = async (req, res) => {
-    roleValidation(req, res, "createProject")
+    if(!roleValidation(req, res, 'createProject')) return;
     const {userId} = req
     
     try {
@@ -31,15 +31,63 @@ export const handleAddProject = async (req, res) => {
         res.status(500).json({message: 'server side error', clientMessage: 'ошибка сервера при получении данных'})
     }
 }
+export const handleCloseProject = async (req, res) => {
+    if(!roleValidation(req, res, 'changeProject')) return;
+    const {userId} = req 
+    try {
+        const {target} = req.params
+        const {close} = req.body
+        if(close === undefined || !target) return res.status(400).json({clientMessage: 'Ошибка'})
+        const project = await Project.findById(target);
+        if(!project) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти проект. Возможно, его удалил другой администратор'})
+        const {code, name} = project
+        if(close){
+            project.closed = true;
+        } 
+        if(!close) {
+            project.closed = false;
+        }
+       
+        await project.save();
+        handleHistory(userId, {itemId: code, name}, "changeProject")
+        res.status(201).json({message: 'created', clientMessage: `Проект ${close ? 'закрыт' : 'активирован' }`})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: 'server side error', clientMessage: 'ошибка сервера при получении данных'})
+    }
+}
 
-export const handleDeleteProject = async (req, res) => {
-    roleValidation(req, res, "deleteProject")
+export const handleChangeProject = async (req, res) => {
+    if(!roleValidation(req, res, 'changeProject')) return;
     const {userId} = req
     
     try {
-        const {code} = req.body;
-        const project = await Project.findOne({code});
-        const name = project.name
+        const {target} = req.params
+        const {descr} = req.body;
+        if(!target)return res.status(400).json({clientMessage: 'Ошибка'})
+        const project = await Project.findById(target);
+        if(!project) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти проект. Возможно, его удалил другой администратор'});
+        const {name, code} = project;
+        project.descr = descr;
+        await project.save();
+
+        handleHistory(userId, {itemId: code, name}, "changeProject")
+        res.status(201).json({message: 'created', clientMessage: "Описание проекта изменено"})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: 'server side error', clientMessage: 'ошибка сервера при получении данных'})
+    }
+}
+
+export const handleDeleteProject = async (req, res) => {
+    if(!roleValidation(req, res, 'deleteProject')) return;
+    const {userId} = req
+    
+    try {
+        const {target} = req.body;
+        const project = await Project.findOne({target});
+        if(!project) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти проект. Возможно, его удалил другой администратор'});
+        const {name, code} = project
         await project.delete();
         handleHistory(userId, {itemId: code, name}, "deleteProject")
         res.status(200).json({message: 'deleted', clientMessage: "Проект удален"})

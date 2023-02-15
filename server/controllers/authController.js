@@ -13,11 +13,11 @@ export const handleLogin = async (req, res) => {
 
         const foundUser = await User.findOne({email});
         if(!foundUser) {
-            return res.status(401).json({message: "no user with such email", clientMessage: "Некорректные данные для входа (e-mail или пароль)"});
+            return res.status(401).json({message: "no user with such email", clientMessage: "Некорректные данные для входа (логин или пароль)"});
         }
         const isPassword = await bcrypt.compare(password, foundUser.password);
 
-        if(!foundUser.verified){
+        if(!foundUser.active){
             return res.status(401).json({message: "not verified", clientMessage: "Учетная запись не активирована"});
         }
 

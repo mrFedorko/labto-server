@@ -13,8 +13,8 @@ optionRouter.patch(
    handleAddOption
 );
 
-optionRouter.get(
-    '/deleteOne/',
+optionRouter.delete(
+    '/deleteOne/:target',
    handleDeleteOption
 );
 

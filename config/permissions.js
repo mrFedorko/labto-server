@@ -39,6 +39,9 @@ const permissions = {
     "addUser" : [
         "head", "admin", "developer"
     ],
+    "changeUser" : [
+        "admin", "developer"
+    ],
     "deleteUser" : [
         "head", "admin", "developer"
     ],
@@ -54,11 +57,14 @@ const permissions = {
     "createProject":[
         "head", "admin", "developer"
     ],
-    "changeProjectStatus":[
+    "changeProject":[
         "head", "admin", "developer"
     ],
     "deleteProject":[
         "head", "admin", "developer"
+    ],
+    "addColumn" : [
+        "prep", "head", "admin", "developer"
     ]
 }
-export default permissions
+export default permissions 

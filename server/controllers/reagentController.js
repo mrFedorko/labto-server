@@ -7,7 +7,7 @@ import { roleValidation } from "../services/roleValidation.js";
 import Option from "../models/Option.js";
 
 export const handleAddReagent = async (req, res) => {
-    roleValidation(req, res, 'addReag');
+    if(!roleValidation(req, res, 'addReag')) return;;
     const creator = req.userId;
 
     try {
@@ -43,7 +43,7 @@ export const handleAddReagent = async (req, res) => {
 export const handleChangeReagent = async (req, res) => {
     const {target} = req.params;
     const userId = req.userId;
-    roleValidation(req, res, 'changeReag');
+    if(!roleValidation(req, res, 'changeReag')) return;
 
     try {
         const { CAS,passport,SDS,TDS,warn,price,location } = req.body;     
@@ -126,7 +126,7 @@ export const handleTakeReagent = async (req, res) => {
 
 export const handleIsolateReagent = async (req, res) => {
     const userId = req.userId;
-    roleValidation(req, res, 'isolateReag');
+    if(!roleValidation(req, res, 'isolateReag')) return;
 
     try {
         
@@ -134,6 +134,7 @@ export const handleIsolateReagent = async (req, res) => {
 
         const reagent = await Reagent.findById(target);
         reagent.isolate = true;
+        reagent.isolateDate = Date.now();
         await reagent.save();
         await handleHistory(userId, {itemId: reagent.itemId, name: reagent.name, target}, 'isolateReag');
         res.json({message: 'upd', clientMessage: 'Перенесено в карантин'});
@@ -147,7 +148,7 @@ export const handleIsolateReagent = async (req, res) => {
 
 export const handleDeleteReagent = async (req, res) => {
     const userId = req.userId
-    roleValidation(req, res, 'deleteReag');
+    if(!roleValidation(req, res, 'deleteReag')) return;
     try {
         
         const {target} = req.params;
@@ -178,7 +179,7 @@ export const handleDeleteReagent = async (req, res) => {
         res.json({message: 'deleted', clientMessage: 'Документ удален'});
 
     } catch (error) {
-        console.error(error)
+        console.log(error)
         res.status(500).json({message: 'server side error', clientMessage: 'ошибка сервера при удалении документа'})
     }
 }
