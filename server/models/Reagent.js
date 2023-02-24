@@ -21,7 +21,10 @@ const reagentSchema = new Schema({
     inUse: [{
         userId: String,
         date: Date,
-        destination: {type: String},
+        destination: {
+            name: {type: String, default: ''},
+            code: {type: String, default: ''},
+        },
         quan: Number,
         test: String,
         comment: {type: String, default: ''},
@@ -31,9 +34,12 @@ const reagentSchema = new Schema({
     price: Number,
     isolate: {type: Boolean, default: false},
     creator: Types.ObjectId,
-    isolateDate: Date,
+    isolateDate: {type: Date, default: new Date('2099-12-17T12:25:50.391+00:00')},
     changed: {type: Boolean, default: false},
-    initialDestination: {type: String,  default: ''}
+    initialDestination: {
+        code: String,
+        name: String,
+    }
 });
 
 const Reagent = model('Reagent', reagentSchema);

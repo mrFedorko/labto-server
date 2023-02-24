@@ -32,6 +32,7 @@ export const handleAddReagent = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(error)
         res.status(500)
         .json({
             message: 'server side error', 
@@ -244,5 +245,23 @@ export const handleAddManyReagents = (req, res) => {
         }
     
 }
+
+export const handleIsolate = async (req, res) => {
+    try {
+        const reags = await Reagent.find({})
+        reags.forEach(async item => {
+            item.initialDestination = {
+                name: '',
+                code: '',
+            }
+            await item.save();
+        })
+        res.sendStatus(200);
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+    }
+}
+
 
 

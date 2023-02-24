@@ -91,9 +91,9 @@ export const handleChangeUserData = async (req,res) => {
         if (!user) return res.status(400).json({message: 'error', clientMessage: 'Пользователь не найден'});
         const name = user.name
         user.name = newName;
-        user.position = newDirection;
-        user.direction = newDepartment;
-        user.department = newPosition;
+        user.position = newPosition;
+        user.direction = newDirection;
+        user.department = newDepartment;
         user.phone = newPhone;
         await user.save();
         await handleHistory(userId, {name}, 'changeUser')

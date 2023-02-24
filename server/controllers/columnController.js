@@ -7,8 +7,8 @@ export const handleAddColumn = async (req, res) => {
 	if(!roleValidation(req, res, 'addColumn')) return;
 	const { userId } = req;
 	try {
-		const { itemId, name,  manufacturer, cat, lot, sn, restSolvent, passport, initialDestination, mainSubstance, mainProject, type } = req.body;
-		if (!(itemId && name && manufacturer && cat && lot && sn && restSolvent && initialDestination && type)){
+		const { itemId, name, manufacturer, cat, lot, sn, restSolvent, passport, initialDestination, mainSubstance, type, fromDate, pressureLimit } = req.body;
+		if (!(itemId && name && manufacturer && cat && sn && restSolvent && initialDestination && type)){
 			return res.status(400).json({message: 'error', clientMessage: 'Заполните обязательные поля'})
 		};
 		const existed = await Column.findOne({itemId})
@@ -16,9 +16,11 @@ export const handleAddColumn = async (req, res) => {
           return res.status(403).json({message: 'forbidden', clientMessage: 'Поле ID должно быть уникальным, внесите изменения и попробуйте снова'})
         }
 
-		const newColumn = new Column({itemId, manufacturer, cat, lot, sn, restSolvent, passport, initialDestination, mainSubstance, mainProject, type})
+		const newColumn = new Column({itemId, name, manufacturer, cat, lot, sn, restSolvent, passport, initialDestination, mainSubstance, mainProject: initialDestination, type, pressureLimit})
+		if(!!fromDate) newColumn.fromDate = fromDate
 		await newColumn.save();
 		handleHistory(userId, {itemId, name}, "addColumn");
+		res.status(201).json({message: 'created', clientMessage: 'Документ создан'})
 	} catch (error) {
 		console.log(error);
         res.status(500)
@@ -38,11 +40,12 @@ export const handleTakeColumn = async (req, res) => {
 		if(!column) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти колонку'})
 		if (column.current.userId) return res.status(400).json({message: 'error', clientMessage: `Колонку уже использует ${column.current.userName}. Возможно, он взял ее до вас`})
 		const userName = user.name;
-		const {destination, test} = req.body;
-		const fromDate = Date.now();
+		const {destination, test, fromDate} = req.body;
+		
 
 		const current = {userId, userName, destination, test, fromDate};
 		column.current = current;
+		column.busy = true;
 		await column.save();
 		handleHistory(userId, {itemId: column.itemId, name: column.name}, "takeColumn");
 		res.json({message: 'success', clientMessage: 'Колонка взята в работу'})
@@ -64,15 +67,15 @@ export const handleReturnColumn = async (req, res) => {
 		if(!column) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти колонку'})
 		if (column.current.userId !== userId) return res.status(400).json({message: 'error', clientMessage: `Вы не можете вернуть колонку, которую не брали`})
 
-		const {countInj, restSolvent, mobilePhase, comment} = req.body;
-		if(!(countInj && restSolvent && mobilePhase && comment)) return res.status(400).json({message: 'error', clientMessage: 'Заполните все поля'});
+		const {countInj, restSolvent, mobilePhase, comment, fromDate, toDate,  test} = req.body;
+		if(!(countInj && restSolvent && mobilePhase && comment && fromDate && toDate && test)) return res.status(400).json({message: 'error', clientMessage: 'Заполните все поля'});
 
-		const {userName, fromDate, destination, test,} = column.current;
+		const {userName, destination } = column.current
 		const inUseItem = {
 			userId, 
 			userName, 
 			fromDate,
-			toDate: Date.now(),
+			toDate,
 			destination,
 			countInj,
 			test,
@@ -83,9 +86,20 @@ export const handleReturnColumn = async (req, res) => {
 
 		column.inUse.push(inUseItem);
 		column.totalInj += countInj;
+		column.busy	 = false
+		column.restSolvent = restSolvent;
+		column.current = {
+			test: '',
+			userId: '',
+			userName: '',
+			destination: {
+				code: '',
+				name: '',
+			},
+		}
 		await column.save();
 		handleHistory(userId, {itemId: column.itemId, name: column.name}, "returnColumn");
-
+		res.json({message: 'success', clientMessage: 'Использование завершено'})
 	} catch (error) {
 		console.log(error);
         res.status(500)
@@ -105,8 +119,12 @@ export const handleGetColumns = async (req, res) => {
 			return false
 		}
 		if(!type || !isolate) return res.sendStatus(400);
+		if (type === 'all' && isolate === 'true'){
+			const columns = await Column.find({isolate: true}).select({inUse: 0});
+			return res.json({columns, message: 'data fetch'})
+		}
 
-		const columns = await Column.find({type, isolate: strToBool(isolate)}).select('name manufacturer cat lot sn current mainSubstance mainProject');
+		const columns = await Column.find({type, isolate: strToBool(isolate)}).select({inUse: 0});
 		res.json({columns, message: 'data fetch'})
 	} catch (error) {
 		console.log(error);

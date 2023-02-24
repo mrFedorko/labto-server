@@ -12,7 +12,10 @@ const draftSchema = new Schema({
         units: String
     },
     quan: {type: Number, default: 0},
-    destination: String,
+    destination: {
+        name: {type: String, default: ''},
+        code: {type: String, default: ''},
+    },
     test: String,
 });
 

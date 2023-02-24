@@ -8,10 +8,11 @@ const columnSchema = new Schema({
     cat: String,
     lot: String,
     sn: String,
+    fromDate: {type: Date, default: Date.now()},
     totalInj: {type: Number, default: 0},
     restSolvent: String,
     descr: {type: String, default: ''},
-    status: {type: Boolean, default: false},
+    busy: {type: Boolean, default: false},
     passport: {type: String, default: ''},
     pressureLimit: {type: String, default: ''},
     isolate: {type: Boolean, default: false},
@@ -33,7 +34,7 @@ const columnSchema = new Schema({
             code: {type: String, default: ''},
         },
         test: {type: String, default: ''},
-        fromdDate: {type: Date},
+        fromDate: {type: Date},
     },
     inUse: [
         {
@@ -41,7 +42,10 @@ const columnSchema = new Schema({
             userName: String,
             fromDate: Date,
             toDate: Date,
-            destination: String,
+            destination: {
+                name: {type: String, default: ''},
+                code: {type: String, default: ''},
+            },
             countInj: Number,
             test: String,
             mobilePhase: String,

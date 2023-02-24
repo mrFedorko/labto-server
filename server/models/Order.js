@@ -26,7 +26,10 @@ const orderSchema = new Schema({
     ownerName: {type: String, default: ''},
     addressee: Types.ObjectId,
     archive: {type: Boolean, default: false},
-    initialDestination: {type:String, default: ''},
+    initialDestination: {
+        name: {type: String, default: ''},
+        code: {type: String, default: ''},
+    },
 });
 
 const Order = model('Order', orderSchema);

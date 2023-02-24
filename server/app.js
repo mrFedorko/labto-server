@@ -32,6 +32,8 @@ import { draftRouter } from './routes/draft.route.js';
 import { historyRouter } from './routes/history.route.js';
 import { userRouter } from './routes/user.route.js';
 import { optionRouter } from './routes/optins.route.js';
+import { reportRouter } from './routes/report.route.js';
+import { columnRouter } from './routes/column.route.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -67,12 +69,14 @@ app.use(verifyJWT);
 app.use('/api/options/', optionRouter)
 app.use('/api/history/', historyRouter)
 app.use('/api/reagent/', reagentRouter);
+app.use('/api/column/', columnRouter);
 app.use('/api/draft/', draftRouter)
 app.use('/api/project/', projectRouter);
 app.use('/api/order/',orderRouter);
 app.use('/api/users/', userRouter)
 app.use('/api/chat/', chatMessageRouter);
 app.use('/api/', uploadRouter);
+app.use('/api/report/', reportRouter);
 
 // create server for ws integretion
 const sslCrt = {key: privateKey, cert: certificate}
