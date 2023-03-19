@@ -16,8 +16,9 @@ const columnSchema = new Schema({
     passport: {type: String, default: ''},
     pressureLimit: {type: String, default: ''},
     isolate: {type: Boolean, default: false},
-    isolateDate: Date,
+    isolateDate: {type: Date, default: new Date('2099-12-17T12:25:50.391+00:00')},
     mainSubstance: {type: String, default: ''},
+    price: {type: Number, default: 0},
     mainProject: {
         code: String,
         name: String,

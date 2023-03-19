@@ -8,7 +8,7 @@ historyRouter.get(
    handleGetHistory
 );
 
-historyRouter.get(
+historyRouter.patch(
     '/getUser/:target',
     handleGetUserHistory
 )

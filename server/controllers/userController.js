@@ -11,7 +11,7 @@ export const handleAddUser = async (req, res) => {
     try {
         const { email, password, name, direction, department, position, role, phone } = req.body;
         const hashedPassword = await bcrypt.hash(password, 6);
-        if(!(email, password, name, direction, department, position, role)){
+        if(!(email && password && name && direction && department && position && role)){
             return res.status(400).json({message: 'error', clientMessage: 'Ошибка. Не все данные заполнены'})
         }
         const foundUser = await User.findOne({email});

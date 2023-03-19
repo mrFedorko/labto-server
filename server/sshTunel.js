@@ -1,17 +1,18 @@
 import tunnel from 'tunnel-ssh';
 import config from 'config';
-
+import  * as dotenv from 'dotenv'
+dotenv.config()
 
 
 function connectDb(dbConnection){
 
-    if (config.get('mode') !== "dev"){
+    if (process.env.MODE !== "dev"){
         dbConnection();
     } else{
         const conf = {
-            username:config.get('server.username'),
-            password:config.get('server.password'),
-            host:config.get('server.host'),
+            username:process.env.SERVER_USERNAME,
+            password:process.env.SERVER_PASSWORD,
+            host:process.env.SERVER_HOST,
             port:22,
             dstPort:27017,
             localHost:'127.0.0.1',

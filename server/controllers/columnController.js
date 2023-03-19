@@ -20,7 +20,7 @@ export const handleAddColumn = async (req, res) => {
 		if(!!fromDate) newColumn.fromDate = fromDate
 		await newColumn.save();
 		handleHistory(userId, {itemId, name}, "addColumn");
-		res.status(201).json({message: 'created', clientMessage: 'Документ создан'})
+		res.status(201).json({message: 'created', clientMessage: 'Документ колонки создан'})
 	} catch (error) {
 		console.log(error);
         res.status(500)
@@ -85,7 +85,7 @@ export const handleReturnColumn = async (req, res) => {
 		}
 
 		column.inUse.push(inUseItem);
-		column.totalInj += countInj;
+		column.totalInj += +countInj;
 		column.busy	 = false
 		column.restSolvent = restSolvent;
 		column.current = {
@@ -154,11 +154,15 @@ export const handleGetOneColumn = async (req, res) => {
 }
 
 export const handleDeleteColumn = async (req,res) => {
+	if(!roleValidation(req, res, 'deleteColumn')) return;
 	const {userId} = req;
 	try {
 		const {target} = req.params
 		const column = await Column.findById(target);
-		if(!column) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти колонку. Возможно кто-то удалил ее'})
+		if(!column) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти колонку. Возможно кто-то удалил ее до вас'});
+		if(column.current.userName) return res.status(400).json({message: 'error', clientMessage: 'Вы не можете удалить колонку, которая сейчас используется'});
+
+
 		const {name, itemId} = column;
 		await column.delete();
 		handleHistory(userId, {itemId, name}, "deleteColumn");
@@ -169,9 +173,71 @@ export const handleDeleteColumn = async (req,res) => {
         res.status(500)
         .json({
             message: 'server side error', 
-            clientMessage: 'Ошибка сервера при получении данных',
+            clientMessage: 'Ошибка сервера при удалении',
         });
 	}
+}
+
+export const handleIsolateColumn = async (req,res) => {
+	if(!roleValidation(req, res, 'isolateColumn')) return;
+	const {userId} = req;
+	try {
+		const {target} = req.params
+		const column = await Column.findById(target);
+		if(!column) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти колонку. Возможно кто-то удалил ее'});
+		if(column.current.userName) return res.status(400).json({message: 'error', clientMessage: 'Вы не можете списать колонку, которая сейчас используется'})
+		const {name, itemId} = column;
+		column.isolate = true;
+		column.isolateDate = Date.now();
+		await column.save();;
+		handleHistory(userId, {itemId, name}, "isolateColumn");
+		res.json({message: 'success' , clientMessage: 'Колонка списана'})
+
+	} catch (error) {
+		console.log(error);
+        res.status(500)
+        .json({
+            message: 'server side error', 
+            clientMessage: 'Ошибка сервера при удалении',
+        });
+	}
+}
+
+export const handleChangeColumn = async (req, res) => {
+    const {target} = req.params;
+    const userId = req.userId;
+    if(!roleValidation(req, res, 'changeColumn')) return;
+
+    try {
+        const { descr, passport, pressureLimit, restSolvent, mainProject, price } = req.body;     
+        console.log(req.body)
+        const column = await Column.findById(target);
+		if(!column) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти колонку. Возможно кто-то удалил ее'});
+		if(column.current.userName) return res.status(400).json({message: 'error', clientMessage: 'Вы не можете изменить колонку, которая сейчас используется'});
+        const {itemId, name} = column;
+        if(passport && column.passport !== passport) {column.passport = passport};
+        column.descr = descr;
+        column.pressureLimit = pressureLimit;
+        column.restSolvent = restSolvent;
+        column.price = price;
+        column.mainProject = mainProject;
+
+        await column.save();
+        await handleHistory(userId, {itemId, name, target}, 'changeColumn')
+        res.status(201)
+        .json({
+            message: 'updated', 
+            clientMessage: 'Документ изменен',
+        });
+
+    } catch (error) {
+    console.log(error);
+        res.status(500)
+        .json({
+            message: 'server side error', 
+            clientMessage: 'Ошибка сервера при изменении документа',
+        });
+    }
 }
 
 

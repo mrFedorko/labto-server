@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import config from 'config'
 import { handleHistory } from '../services/historyAdd.js';
+import  * as dotenv from 'dotenv'
+dotenv.config()
+
 
 export const handleLogin = async (req, res) => {
     try {
@@ -27,14 +30,14 @@ export const handleLogin = async (req, res) => {
                 userId: foundUser.id,
                 userRole: foundUser.role,
             }, 
-            config.get('ACCESS_TOKEN_SECRET'),
+            process.env.ACCESS_TOKEN_SECRET,
             {expiresIn: '20m'});
 
             const refreshToken = jwt.sign({
                 userId: foundUser.id,
                 userRole: foundUser.role
             }, 
-            config.get('REFRESH_TOKEN_SECRET'),
+            process.env.REFRESH_TOKEN_SECRET,
             {expiresIn: '15h'});
 
 /////////// overwrite refresh token into Mongo
@@ -47,11 +50,12 @@ export const handleLogin = async (req, res) => {
             const {role, name, direction, department, position, favorite, id, phone} = foundUser
 
             res.json({accessToken, refreshToken, userId: foundUser.id, role, favorite, name, direction, department, position, phone,  message: 'Successfully', clientMessage: 'Приветствуем!'})
-            handleHistory(id, {target:id}, 'enterSystem')
+            handleHistory(id, {itemId: req.userIp, name}, 'enterSystem')
         } else {
             return res.status(400).json({message: 'wrong data during login', clientMessage: 'Не верные данные при авторизации'});
         }
     } catch (error) {
+        console.log(error)
         res.status(500).json({message: 'server side error during login', clientMessage: 'Ошибка сервера, обратитесь в поддержку'});
     }
 };

@@ -1,11 +1,13 @@
 import { Router } from "express"; 
-import { handleLogin } from "../controllers/authController.js"; 
+import { handleUploadCol } from "../controllers/uploadColController.js";
+
 import { handleUpload } from "../controllers/uploadController.js";
 import { uploadMW } from "../middleware/upload.js";
 
 
 const uploadRouter = Router();
 
-uploadRouter.patch('/upload/:userId/:itemId', uploadMW.single('files'), handleUpload)
+uploadRouter.patch('/upload/:itemId', uploadMW.single('files'), handleUpload);
+uploadRouter.patch('/uploadCol/:itemId', uploadMW.single('files'), handleUploadCol);
 
 export {uploadRouter};

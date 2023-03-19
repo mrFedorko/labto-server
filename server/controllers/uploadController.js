@@ -5,7 +5,7 @@ import { roleValidation } from "../services/roleValidation.js";
 
 export const handleUpload = async (req, res) => {
     
-    roleValidation(req, res, 'addReag')
+    if(!roleValidation(req, res, 'addReag')) return;
     const handleIsURL = (str) =>  {
         const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
           '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
@@ -23,16 +23,19 @@ export const handleUpload = async (req, res) => {
 
         if(!reagent) return res.status(400).json({ message: "couldnt upload", clientMessage: "ошибка при загрузке файла паспорта"});
         const fileName = req.body.fileName
-        console.log(handleIsURL(reagent.passport))
+        if (`${itemId} -- ${fileName}` === reagent.passport){
+            return res.sendStatus(200)
+        }
         if (reagent.passport && !handleIsURL(reagent.passport)){
-            const file = path.resolve('./docs/'+reagent.passport)
+            const file = path.resolve('./docs/'+reagent.passport);
+            if(!file) return res.status(400).json({message: 'error', clientMessage: 'Ошибка при изменении паспорта'})
             unlink(file, (err) => {
-            if (err) throw err;
+            if (err) console.log(err);
             console.log(file, ' was deleted');
             });
         }
         
-        const name = `${itemId}--${fileName}`
+        const name = `${itemId} -- ${fileName}`
         reagent.passport = name
         reagent.save();
         res.json({message: 'uploaded'})

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { handlePassport } from '../controllers/passportController.js';
 import { handleIsolateReagent, handleDeleteReagent, handleGetReagents, handleAddReagent, handleTakeReagent, handleGetOneReagent, handleAddManyReagents, handleChangeReagent, handleIsolate,   } from '../controllers/reagentController.js';
-import { handleFavoriteReagent, handleUnfavoriteReagent } from '../controllers/reagentUserController.js';
+import { handleFavorite, handleUnfavorite } from '../controllers/favoriteController.js';
 
 const reagentRouter = Router();
 
@@ -39,12 +39,12 @@ reagentRouter.put(
 
 reagentRouter.patch(
     '/favorite/:target/',
-    handleFavoriteReagent
+    handleFavorite
 )
 
 reagentRouter.patch(
     '/unfavorite/:target/',
-    handleUnfavoriteReagent
+    handleUnfavorite
 )
 
 reagentRouter.post(

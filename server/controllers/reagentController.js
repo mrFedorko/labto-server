@@ -5,6 +5,17 @@ import { unlink } from 'node:fs';
 import path from "path";
 import { roleValidation } from "../services/roleValidation.js";
 import Option from "../models/Option.js";
+import Settings from "../models/Settings.js";
+
+const handleIsURL = (str) =>  {
+    const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+      '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return !!pattern.test(str);
+}
 
 export const handleAddReagent = async (req, res) => {
     if(!roleValidation(req, res, 'addReag')) return;
@@ -164,7 +175,7 @@ export const handleDeleteReagent = async (req, res) => {
         const reagent = await Reagent.findById(target);
         
 
-        if (reagent.passport){
+        if (reagent.passport && handleIsURL(reagent.passport)){
             try {
                 const file = path.resolve('./docs/'+reagent.passport)
                 unlink(file, (err) => {
@@ -197,6 +208,9 @@ export const handleGetOneReagent = async (req, res) => {
         res.status(500).json({message: 'server side error', clientMessage: 'ошибка сервера при получении данных'})
     }
 }
+
+
+// ***************HANDLE ROUTES
 
 export const handleAddManyReagents = (req, res) => {
     
@@ -248,14 +262,11 @@ export const handleAddManyReagents = (req, res) => {
 
 export const handleIsolate = async (req, res) => {
     try {
-        const reags = await Reagent.find({})
-        reags.forEach(async item => {
-            item.initialDestination = {
-                name: '',
-                code: '',
-            }
-            await item.save();
-        })
+        const serviceSetting = new Settings({name: 'service', status: false})
+        const startSetting = new Settings({name: 'start', status: false});
+        await serviceSetting.save();
+        await startSetting.save();
+        
         res.sendStatus(200);
     } catch (error) {
         console.error(error)

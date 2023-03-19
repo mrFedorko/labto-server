@@ -7,11 +7,11 @@ const fileStorageEng = multer.diskStorage({
     },
     filename: (req, file , cb) => {
         file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8')
-        cb(null, req.params.itemId +  '--' + file.originalname);
+        cb(null, req.params.itemId +  ' -- ' + file.originalname);
     },
 });
 
 
 
 
-export const uploadMW =  multer({storage: fileStorageEng});
+export const uploadMW =  multer({storage: fileStorageEng, limits: { fileSize: 10485760 }});

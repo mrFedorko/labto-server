@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
-import config from 'config';
 import User from '../models/User.js';
+import  * as dotenv from 'dotenv'
+dotenv.config()
+
 
 export const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
@@ -16,14 +18,14 @@ export const handleRefreshToken = async (req, res) => {
     // validate jwt
     jwt.verify(
         refreshToken,
-        config.get('REFRESH_TOKEN_SECRET'),
+        process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) => {
             if (err || foundUser.id !== decoded.userId){
                 return res.sendStatus(403);
             };
             const accessToken = jwt.sign(
                 {userId: decoded.userId, userRole: decoded.userRole},
-                config.get('ACCESS_TOKEN_SECRET'),
+                process.env.ACCESS_TOKEN_SECRET,
                 {expiresIn: '20m'}
             );
             res.json({

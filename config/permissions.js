@@ -27,7 +27,7 @@ const permissions = {
         "prep", "head", "admin", "developer"
     ],
     "getAllOrders" : [
-        "prep", "head", "admin", "developer"
+        "prep", "head", "admin", "developer", "user"
     ],
 
     "takeColumn" : [
@@ -80,6 +80,15 @@ const permissions = {
     ],
     "addColumn" : [
         "prep", "head", "admin", "developer"
+    ],
+    "createSnapshot" : [
+        "admin", "developer"
+    ],
+    "restoreDb" : [
+        "admin", "developer"
+    ],
+    "adminAction" : [
+        "admin", "developer"
     ]
 }
 export default permissions 

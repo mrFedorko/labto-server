@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
-import config from 'config';
+import  * as dotenv from 'dotenv'
+dotenv.config()
+
 
 const verifyJWT = (req, res, next) => {
     if (req.method === 'OPTIONS'){
@@ -13,7 +15,7 @@ const verifyJWT = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     jwt.verify(
         token,
-        config.get('ACCESS_TOKEN_SECRET'),
+        process.env.ACCESS_TOKEN_SECRET,
         (err, decoded) => {
             if(err) return res.sendStatus(403); // invalid
             req.userId = decoded.userId;
