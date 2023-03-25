@@ -15,6 +15,10 @@ const stringifyОptionName = (type = '') => {
             return 'тип стандарта';
         case 'department':
             return 'управление';
+        case 'manufacturerCol':
+            return 'Производитель колонок';
+        case 'manufacturerSubst':
+            return 'Производитель субстанций';
         default:
             return ''
     }
@@ -53,7 +57,7 @@ export const handleGetUnactiveUsers = async (req, res) => {
 export const handleGetOptions = async (req, res) => {
     try {
         const options = await Option.find({});
-        if (!options) { return res.sendStatus(500)}
+        if (!options) { return res.status(500).json({message: 'error', clientMessage: 'Ошибка сервера. Обратитесь в поддержку'})}
         const hasRsType = options.filter(item=> item.name === "rsType");
         const hasManufacturer = options.filter(item=> item.name === "manufacturer");
 

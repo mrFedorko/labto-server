@@ -147,6 +147,15 @@ export const handleIsolateReagent = async (req, res) => {
         const reagent = await Reagent.findById(target);
         reagent.isolate = true;
         reagent.isolateDate = Date.now();
+        if(reagent.passport || !handleIsURL(reagent.passport)){
+            const file = path.resolve('./docs/'+reagent.passport);
+            unlink(file, (err) => {
+            if (err) console.log(err);
+            console.log(file, ' was deleted');
+            })
+        }
+        reagent.passport = '';
+        
         await reagent.save();
         await handleHistory(userId, {itemId: reagent.itemId, name: reagent.name, target}, 'isolateReag');
         res.json({message: 'upd', clientMessage: 'Перенесено в карантин'});

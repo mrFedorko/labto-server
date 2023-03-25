@@ -58,7 +58,7 @@ export const handleCreateProjectReport = async (req, res) => {
                     (new Date(toDate)) >= (new Date(startDate)) 
                 
                 ){ 
-                    const usagePrice = (Math.ceil(price/40000*totalInj*100))/100;
+                    const usagePrice = (Math.ceil(price/40000*countInj*100))/100;
                     resultColumns.push({
                         itemId,
                         sn,
@@ -81,7 +81,7 @@ export const handleCreateProjectReport = async (req, res) => {
             resultReags: resultReags.sort((a, b) => a.date - b.date), 
             resultColumns: resultColumns.sort((a, b) => a.fromDate - b.fromDate),  
             message: 'ok', 
-            clientMessage: 'Данные получены, загрузка отчета',
+            clientMessage: 'Данные получены, составление отчета',
         })
 
     } catch (error) {
@@ -140,7 +140,7 @@ export const handleCreateDirectionReport = async (req, res) => {
                     (new Date(toDate)) < (new Date(endDate)) && 
                     (new Date(toDate)) > (new Date(startDate)) 
                     ){  
-                        const usagePrice = (Math.ceil(price/40000*totalInj*100))/100;
+                        const usagePrice = (Math.ceil(price/40000*countInj*100))/100;
                     resultColumns.push({
                         itemId,
                         sn,
@@ -165,7 +165,7 @@ export const handleCreateDirectionReport = async (req, res) => {
             resultReags: resultReags.sort((a, b) => a.date - b.date), 
             resultColumns: resultColumns.sort((a, b) => a.fromDate - b.fromDate),  
             message: 'ok', 
-            clientMessage: 'Данные получены, загрузка отчета',
+            clientMessage: 'Данные получены, составление отчета',
         })
 
 

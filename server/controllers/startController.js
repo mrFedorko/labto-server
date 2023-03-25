@@ -6,6 +6,7 @@ export const handleStartIsService = async (req, res) => {
     try {
         const service = await Settings.findOne({name: 'service'});
         if (!service) return res.status(400).json({message: 'error', clientMessage: 'Ошибка сервера, обратитесь в поддержку'})
+        
         res.json({message: 'success', serviceStatus: service.status})
     } catch (error) {
         console.log(error);

@@ -19,7 +19,9 @@ export const handleBackup = async (req, res) => {
         const year = newDate.getFullYear();
         const month = newDate.getMonth()+1;
         const day = newDate.getDate()
-        return `_${year}_${month}_${day}`
+        const hours = newDate.getHours();
+        const minutes = newDate.getMinutes();
+        return `_${year}_${month}_${day}_h${hours}m${minutes}`
     }
 
     try {

@@ -7,10 +7,10 @@ type HistoryAction =
     'addDraft' | 
     'takeColumn' | 
     'returnColumn' |
-    'addColumn'|     // NONONON
-    'changeColumn'|     // NONONON
-    'isolateColumn'|     // NONONON
-    'deleteColumn'|     // NONONON
+    'addColumn'|     
+    'changeColumn'|     
+    'isolateColumn'|     
+    'deleteColumn'|     
     'createOrder' |
     'changeOrderStatus'|
     'deleteOrder' |

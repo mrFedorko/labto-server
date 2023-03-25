@@ -39,6 +39,7 @@ import { backupRouter } from './routes/backup.route.js';
 import { appService } from './middleware/appServises.js';
 import { settingsRouter } from './routes/settings.route.js';
 import { startRouter } from './routes/start.route.js';
+import { helpRouter } from './routes/help.route.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -89,6 +90,7 @@ app.use('/api/settings/', settingsRouter);
 app.use('/api/', uploadRouter);
 app.use('/api/report/', reportRouter);
 app.use('/api/', backupRouter);
+app.use('/api/', helpRouter);
 
 
 // create server for ws integretion
