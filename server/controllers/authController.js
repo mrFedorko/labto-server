@@ -11,7 +11,7 @@ export const handleLogin = async (req, res) => {
     try {
         const {email, password} = await req.body;
         if (!email || !password) {
-            return res.status(400).json({message: "email and/or password required", clientMessage: "Введите данные для входа (e-mail и пароль)"});
+            return res.status(400).json({message: "email and/or password required", clientMessage: "Введите данные для входа (логин и пароль)"});
         }
 
         const foundUser = await User.findOne({email});

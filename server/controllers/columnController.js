@@ -210,7 +210,7 @@ export const handleChangeColumn = async (req, res) => {
 
     try {
         const { descr, passport, pressureLimit, restSolvent, mainProject, price } = req.body;     
-        console.log(req.body)
+
         const column = await Column.findById(target);
 		if(!column) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти колонку. Возможно кто-то удалил ее'});
 		if(column.current.userName) return res.status(400).json({message: 'error', clientMessage: 'Вы не можете изменить колонку, которая сейчас используется'});

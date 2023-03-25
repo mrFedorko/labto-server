@@ -3,7 +3,6 @@ import { roleValidation } from "../services/roleValidation.js";
 
 export const handleGetHistory = async (req, res) => {
     const userId = req.userId
-    console.log(userId)
     try {
         const history = await History.findOne({owner: userId})
         if(!history) res.status(400).json({message: 'not found', clientMessage: 'похоже, вы не совершали никаких действий'})

@@ -28,7 +28,7 @@ export const handleBackup = async (req, res) => {
 
         fs.writeFile(`./backups/backup${handleDate()}.tar`,'', function (err) {
             if (err) throw err;
-            console.log('File is created successfully.');})
+            console.log('backup file is created successfully.');})
         const mongo_connector = new MongoDBDuplexConnector({
             connection: {
                 uri: `${handleGetUri()}`,
@@ -102,7 +102,7 @@ export const handleRestore = async (req, res) => {
         for await (const { total, write } of transferer) {
             console.log(`remaining bytes to write: ${total - write}`);
         }
-        res.json({message: 'success', clientMessage: 'Восстановление успешно завершено, перезагрузите систему'})
+        res.json({message: 'success', clientMessage: 'Восстановление успешно завершено, обновите страницу'})
     } catch (error) {
         console.log(error);
         res.status(500)

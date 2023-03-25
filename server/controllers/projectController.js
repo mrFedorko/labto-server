@@ -88,7 +88,6 @@ export const handleDeleteProject = async (req, res) => {
         const project = await Project.findById(target);
         if(!project) return res.status(400).json({message: 'error', clientMessage: 'Не удается найти проект. Возможно, его удалил другой администратор'});
         const {name, code} = project
-        console.log(name, code, target)
         await project.delete();
 
         handleHistory(userId, {itemId: code, name}, "deleteProject")

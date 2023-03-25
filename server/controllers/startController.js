@@ -1,20 +1,11 @@
+import bcrypt from 'bcryptjs';
 import Option from "../models/Option.js";
 import Settings from "../models/Settings.js";
 import User from "../models/User.js";
 
-export const handleStartIsService = async (req, res) => {
-    try {
-        const service = await Settings.findOne({name: 'service'});
-        if (!service) return res.status(400).json({message: 'error', clientMessage: 'Ошибка сервера, обратитесь в поддержку'})
-        
-        res.json({message: 'success', serviceStatus: service.status})
-    } catch (error) {
-        console.log(error);
-        res.sendStatus(500)
-    }
-}
 
-export const handleIsStart = async () => {
+
+export const handleIsStart = async (req, res) => {
     try {
         const users = await User.find({});
         if(users.length) return res.json({start:false})
@@ -29,28 +20,30 @@ export const handleIsStart = async () => {
     }
 }
 
-export const handleStart = async () => {
+export const handleStart = async (req, res) => {
         
     try {
 
         // create first admin
 
         const users = await User.find({});
-        if(users.length) return res.sendStatus(403)
-        const { email, password } = req.body;
-        if(!(email && password)){
-            return res.status(400).json({message: 'error', clientMessage: 'Ошибка. Не все данные заполнены'})
-        }
-        const hashedPassword = await bcrypt.hash(password, 6);
+        if(users.length) return res.status(403).json({message: 'forbidden', clientMessage: 'Приложение уже было настроено ранее. Войдите или обратитесь в поддержку'})
+        const {department} = req.body
+        
+        const hashedPassword = await bcrypt.hash("admin", 6);
 
-        const newUser = new User({email, password: hashedPassword, role: 'admin'})
+        const newUser = new User({email: 'admin', password: hashedPassword, role: 'admin', department})
         await newUser.save();
 
         // create options and settings in db
-        const optionNames = ['manufacturer', 'rsType', 'role', 'department', 'direction', 'position']
+        
+        const optionNames = ['manufacturer', 'rsType', 'role', 'department', 'direction', 'position', 'manufacturerCol', 'manufacturerSubst']
         optionNames.forEach(async name => {
             if(name !== 'role') {
                 const option = new Option({name})
+                if(name === 'department'){
+                    option.options.push(department)
+                }
                 await option.save();
             } else {
                 const option = new Option({
@@ -68,7 +61,6 @@ export const handleStart = async () => {
 
         const serviceSetting = new Settings({name: 'service', status: false})
         await serviceSetting.save();
-        await startSetting.save();
 
         res.json({message: 'success', clientMessage: 'Стартовый профиль создан. Теперь войдите, используя введенные данные'})
     } catch (error) {

@@ -1,12 +1,18 @@
 import { Router } from "express"; 
-import { handleStartIsService } from "../controllers/startController.js";
+import { handleIsStart, handleStart } from "../controllers/startController.js";
+import { limiterMW } from "../middleware/rateLimit.js";
 
 
 const startRouter = Router();
 
 startRouter.get(
-    '/isService',
-    handleStartIsService
+    '/isStart',
+    limiterMW,
+    handleIsStart
+);
+startRouter.post(
+    '/startApp',
+    handleStart
 );
 
 
