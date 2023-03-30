@@ -42,12 +42,12 @@ export const handleStart = async (req, res) => {
             if(name !== 'role') {
                 const option = new Option({name})
                 if(name === 'department'){
-                    option.options.push(department)
+                    option.options.push({value: department, label:department})
                 }
                 await option.save();
             } else {
                 const option = new Option({
-                    name: role,
+                    name: 'role',
                     options: [
                         {value: 'admin', label: 'Администратор'},
                         {value: 'head', label: 'Начальник'},

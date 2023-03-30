@@ -3,7 +3,7 @@ import { Schema, model, Types } from 'mongoose';
 const columnSchema = new Schema({  
     type: String, 
     name: String,
-    itemId: String,
+    itemId: {type: String, require: true, unique: true},
     manufacturer: String,
     cat: String,
     lot: String,

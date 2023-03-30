@@ -31,6 +31,8 @@ type HistoryAction =
     ;
 
 type ReagType = 'reag' | 'rs' | 'subst';
+type EquipmentType = 'hplcSystem' | 'gcSystem' | 'scales' | 'titrator' | 'spectrometer' | 'sirynges' | 'microscope' | 'termal' | 'climate' 
+type EquipmentStatus = 'ready' | 'broken' | 'repair' | 'storage' | 'verification'
 
 type OrderStatus = 'created' | 'processed' | 'executed' | 'completed' | 'canceled' | 'reviced' | 'changed' | 'confirmed'
 type OrderRequestStatus = OrderStatus & 'all' | 'active' | 'new' | 'archive'

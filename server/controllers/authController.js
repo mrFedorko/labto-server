@@ -1,27 +1,30 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
-import config from 'config'
 import { handleHistory } from '../services/historyAdd.js';
 import  * as dotenv from 'dotenv'
+import { handleCookieOptions } from '../services/cookieOptions.js';
 dotenv.config()
 
 
 export const handleLogin = async (req, res) => {
+    
+    const cookieOptions = handleCookieOptions();
+    
     try {
         const {email, password} = await req.body;
         if (!email || !password) {
-            return res.status(400).json({message: "email and/or password required", clientMessage: "Введите данные для входа (логин и пароль)"});
+            return res.status(400).json({message: "email and/or password required", clientMessage: "Enter credentials (login and password)"});
         }
 
         const foundUser = await User.findOne({email});
         if(!foundUser) {
-            return res.status(401).json({message: "no user with such email", clientMessage: "Некорректные данные для входа (логин или пароль)"});
+            return res.status(401).json({message: "no user with such email", clientMessage: "Incorrect credentials (Login or password)"});
         }
         const isPassword = await bcrypt.compare(password, foundUser.password);
 
         if(!foundUser.active){
-            return res.status(401).json({message: "not verified", clientMessage: "Учетная запись не активирована"});
+            return res.status(401).json({message: "not verified", clientMessage: "The account is not activated"});
         }
 
         if (foundUser && isPassword){
@@ -45,18 +48,18 @@ export const handleLogin = async (req, res) => {
             await foundUser.updateOne({refreshToken: refreshToken.toString()})
 
 /////////// saving accessToken & sending response
-            res.cookie('jwt', refreshToken, {httpOnly: 'true', maxAge: 16*60*60*1000, secure: true,  sameSite:'None',});
+            res.cookie('jwt', refreshToken, handleCookieOptions());
 
             const {role, name, direction, department, position, favorite, id, phone} = foundUser
 
-            res.json({accessToken, refreshToken, userId: foundUser.id, role, favorite, name, direction, department, position, phone,  message: 'Successfully', clientMessage: 'Приветствуем!'})
+            res.json({accessToken, userId: foundUser.id, role, favorite, name, direction, department, position, phone,  message: 'Successfully', clientMessage: 'Приветствуем!'})
             handleHistory(id, {itemId: req.userIp, name}, 'enterSystem')
         } else {
-            return res.status(400).json({message: 'wrong data during login', clientMessage: 'Не верные данные при авторизации'});
+            return res.status(400).json({message: 'wrong data during login', clientMessage: 'Not correct data when authorizing'});
         }
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: 'server side error during login', clientMessage: 'Ошибка сервера, обратитесь в поддержку'});
+        res.status(500).json({message: 'server side error during login', clientMessage: 'Server error, contact support'});
     }
 };
 

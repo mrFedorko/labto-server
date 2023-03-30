@@ -58,12 +58,7 @@ export const handleGetOptions = async (req, res) => {
     try {
         const options = await Option.find({});
         if (!options) { return res.status(500).json({message: 'error', clientMessage: 'Ошибка сервера. Обратитесь в поддержку'})}
-        const hasRsType = options.filter(item=> item.name === "rsType");
-        const hasManufacturer = options.filter(item=> item.name === "manufacturer");
 
-        if(!hasRsType.length || !hasManufacturer.length){
-            return res.status(500).json({message: 'error', clientMessage: 'Ошибка базы данных. Обратитесь в поддержку'})
-        }
         res.json({message: 'success', options})
         
     } catch (error) {

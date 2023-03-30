@@ -9,6 +9,7 @@ export const handleRefreshToken = async (req, res) => {
 
     if(!cookies?.jwt) {
         console.log('no cookies');
+        console.log('cookies: ',cookies)
         return res.sendStatus(401);
        
     };

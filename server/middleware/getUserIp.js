@@ -13,6 +13,7 @@ export const getUserIp = (req, res, next) => {
     if (allowedIps.includes(ip.clientIp)){
         return next()
     } else {
-        return res.sendStatus(401)
+        console.log('reject connection from ', ip.clientIp)
+        return res.status(401).json({message:'unauthorized', clientMessage: 'Подключение с этого IP-адреса запрещено'})
     }
 }
