@@ -39,6 +39,7 @@ import { appService } from './middleware/appServises.js';
 import { settingsRouter } from './routes/settings.route.js';
 import { startRouter } from './routes/start.route.js';
 import { helpRouter } from './routes/help.route.js';
+import { equipmentRouter } from './routes/equipment.route.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -80,6 +81,7 @@ app.use('/api/options/', optionRouter);
 app.use('/api/history/', historyRouter);
 app.use('/api/reagent/', reagentRouter);
 app.use('/api/column/', columnRouter);
+app.use('/api/equipment/', equipmentRouter);
 app.use('/api/draft/', draftRouter);
 app.use('/api/project/', projectRouter);
 app.use('/api/order/',orderRouter);
@@ -95,16 +97,9 @@ app.use('/api/', helpRouter);
 const sslCrt = {key: privateKey, cert: certificate}
 const server = http.createServer(app);
 
-//webSocket server
-
-export const wsServer = new WebSocketServer({server});
-handleChat();
-
-
 //////////////////SATRTING APP
 const mongoConnection  = async () => {
-    process.env.MODE === 'prod' && await mongoose.connect(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@localhost:27017/${process.env.DB_NAME}`);
-    process.env.MODE === 'dev' && await mongoose.connect(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@localhost:27000/${process.env.DB_NAME}`);
+    await mongoose.connect(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@localhost:27017/${process.env.DB_NAME}`);
 
     process.on('unhandledRejection', error => {
         console.log('unhandledRejection', error.message);
@@ -116,4 +111,5 @@ const mongoConnection  = async () => {
     });
   
 }
-connectDb(mongoConnection);
+
+mongoConnection();

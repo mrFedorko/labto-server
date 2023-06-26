@@ -58,7 +58,7 @@ const permissions = {
         "admin", "developer"
     ],
     "deleteUser" : [
-        "head", "admin", "developer"
+        "admin", "developer"
     ],
     "addOption" : [
         "admin", "developer"
@@ -89,6 +89,22 @@ const permissions = {
     ],
     "adminAction" : [
         "admin", "developer"
+    ],
+    "addEquipment" : [
+        "admin", "prep", "head", "developer"
+
+    ],
+    "changeEquipment" : [
+        "admin", "prep", "head", "developer"
+
+    ],
+    "isolateEquipment" : [
+        "admin", "prep", "head", "developer"
+
+    ],
+    "deleteEquipment" : [
+        "admin", "prep", "head", "developer"
+
     ]
 }
 export default permissions 

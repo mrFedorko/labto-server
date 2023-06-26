@@ -63,13 +63,13 @@ export const handleChangeReagent = async (req, res) => {
         const reagent = await Reagent.findById(target)
         const {itemId, name} = reagent;
         if(passport) {reagent.passport = passport};
-        reagent.SDS = SDS;
-        reagent.TDS = TDS;
-        reagent.warn = warn;
-        reagent.price = price;
-        reagent.location = location;
-        reagent.CAS = CAS;
-        reagent.changed = true;
+        !!SDS && (reagent.SDS = SDS)
+        !!TDS && (reagent.TDS = TDS)
+        !!warn && (reagent.warn = warn)
+        !!price && (reagent.price = price)
+        !!location && (reagent.location = location)
+        !!CAS && (reagent.CAS = CAS)
+        reagent.changed = true
     
         await reagent.save();
         await handleHistory(userId, {itemId, name, target}, 'changeReag')

@@ -27,12 +27,19 @@ type HistoryAction =
     "createProject" |
     "changeProject" |
     "deleteProject" |
-    "addColumn"
+    "addColumn" |
+    'addEquipment' |
+    'changeEquipment' |
+    'isolateEquipment' |
+    'deleteEquipment' |
+    'verifyEquipment' |
+    'sopConfirm' |
+    'logEquipment'
     ;
 
 type ReagType = 'reag' | 'rs' | 'subst';
-type EquipmentType = 'hplcSystem' | 'gcSystem' | 'scales' | 'titrator' | 'spectrometer' | 'sirynges' | 'microscope' | 'termal' | 'climate' 
-type EquipmentStatus = 'ready' | 'broken' | 'repair' | 'storage' | 'verification'
+type EquipmentType = 'hplc' | 'gc' | 'scales' | 'titrator' | 'spectrometer' | 'sirynges' | 'microscope' | 'termal' | 'climate' | 'handle' | 'other' 
+type EquipmentStatus = 'ready' | 'broken' | 'repair' | 'storage' | 'verification' | 'verificationExpired' | 'verificationFail'
 
 type OrderStatus = 'created' | 'processed' | 'executed' | 'completed' | 'canceled' | 'reviced' | 'changed' | 'confirmed'
 type OrderRequestStatus = OrderStatus & 'all' | 'active' | 'new' | 'archive'

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { handlePassport } from '../controllers/passportController.js';
+import { handlePassport } from '../controllers/docsController.js';
 import { handleIsolateReagent, handleDeleteReagent, handleGetReagents, handleAddReagent, handleTakeReagent, handleGetOneReagent, handleAddManyReagents, handleChangeReagent, handleIsolate,   } from '../controllers/reagentController.js';
 import { handleFavorite, handleUnfavorite } from '../controllers/favoriteController.js';
 

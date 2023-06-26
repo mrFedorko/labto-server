@@ -4,6 +4,7 @@ import fs, { unlink } from 'fs';
 import { MongoTransferer, MongoDBDuplexConnector, LocalFileSystemDuplexConnector } from 'mongodb-snapshot';
 import  * as dotenv from 'dotenv'
 import path from 'path';
+import { handleHistory } from '../services/historyAdd.js';
 dotenv.config()
 
 export const handleBackup = async (req, res) => {

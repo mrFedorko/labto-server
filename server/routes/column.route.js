@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { handleAddColumn, handleChangeColumn, handleDeleteColumn, handleGetColumns, handleGetOneColumn, handleIsolateColumn, handleReturnColumn, handleTakeColumn } from '../controllers/columnController.js';
 import { handleFavorite, handleUnfavorite } from '../controllers/favoriteController.js';
-import { handleColPassport } from '../controllers/passportController.js';
+import { handleColPassport } from '../controllers/docsController.js';
 
 const columnRouter = Router();
 
